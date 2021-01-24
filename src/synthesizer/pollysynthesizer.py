@@ -22,11 +22,7 @@ class PollySynthesizer(Synthesizer):
         if response['AudioStream'] is not None:
             return response['AudioStream']
         else:
-            raise PollySynthesizer.PollyError('Cannot read response')
+            raise ValueError(f'Cannot read response for request: voice_id={voice_id}, text={text[:10]}')
 
     def voices(self) -> list[str]:
         return ['Maxim', 'Tatyana']  # TODO fetch actual voice_ids from Polly
-
-    class PollyError(ValueError):
-        def __init__(self, message):
-            super().__init__(message)

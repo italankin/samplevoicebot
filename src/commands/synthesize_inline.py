@@ -11,31 +11,33 @@ from fileuploader.fileuploader import FileUploader
 from fileuploader.s3fileploader import S3FileUploader
 from synthesizer.pollysynthesizer import PollySynthesizer
 from synthesizer.synthesizer import Synthesizer
-from util import sanitize
-from util.validator import ValidatorResult, Validator
+from util.sanitizer import Sanitizer
+from util.validator import Validator
 
 logger = logging.getLogger(__name__)
 
 synthesizer: Synthesizer
 file_uploader: FileUploader
 validator: Validator
+sanitizer: Sanitizer
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
 
 
 def register(dispatcher: Dispatcher):
-    global synthesizer, file_uploader, validator
+    global synthesizer, file_uploader, validator, sanitizer
     synthesizer = PollySynthesizer(bot_env.aws_session)
     file_uploader = S3FileUploader(bot_env.aws_session, bot_env.config.aws.s3_bucket)
     validator = Validator(bot_env.config.min_message_length, bot_env.config.max_message_length)
+    sanitizer = Sanitizer(bot_env.config.max_message_length)
     dispatcher.add_handler(InlineQueryHandler(__command__))
 
 
 def __command__(update: Update, context: CallbackContext):
     job_name = str(update.effective_user.id)
     had_active_jobs = __remove_active_jobs__(context, job_name)
-    text = sanitize.sanitize(update.inline_query.query)
-    if validator.validate(text) != ValidatorResult.OK:
-        logger.debug(f"Invalid query text='{text}'")
+    text = sanitizer.sanitize(update.inline_query.query)
+    if not validator.validate(text):
+        logger.debug(f"Invalid query='{update.inline_query.query}', sanitized='{text}'")
         if had_active_jobs:
             update.inline_query.answer(results=[], is_personal=True)
         return
@@ -90,6 +92,6 @@ def __synthesize_voice__(voice: str, text: str) -> Optional[Tuple[str, str, str]
         if object_id is None or object_url is None:
             return None
         return object_id, object_url, voice
-    except PollySynthesizer.PollyError as e:
+    except Exception as e:
         logger.debug(f"Failed to synthesize {voice}: {e}")
         return None
