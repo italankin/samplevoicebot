@@ -5,11 +5,11 @@ from enum import Enum
 class Config:
     def __init__(self):
         self.bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
-        self.min_message_length = os.getenv('TELEGRAM_MIN_MESSAGE_LENGTH', 1)
-        self.max_message_length = os.getenv('TELEGRAM_MAX_MESSAGE_LENGTH', 255)
         self.inline_debounce_millis = int(os.getenv('TELEGRAM_INLINE_DEBOUNCE_MILLIS', "1000"))
+        self.min_message_length = int(os.getenv('TELEGRAM_MIN_MESSAGE_LENGTH', "1"))
+        self.max_message_length = int(os.getenv('TELEGRAM_MAX_MESSAGE_LENGTH', "255"))
         self.output_format = Config.OutputFormat.MP3.value
-        output_format = os.getenv('AUDIO_OUTPUT_FORMAT')
+        output_format = os.getenv('TELEGRAM_AUDIO_OUTPUT_FORMAT')
         for f in Config.OutputFormat:
             if f.value['name'] == output_format:
                 self.output_format = f.value
