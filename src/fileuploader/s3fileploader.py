@@ -28,10 +28,7 @@ class S3FileUploader(FileUploader):
                 ExtraArgs={'ContentType': bot_env.config.output_format['mime_type']},
                 Config=TransferConfig(use_threads=False)
             )
-            object_url = self.__s3client__.generate_presigned_url(
-                'get_object',
-                Params={'Bucket': self.__s3_bucket__, 'Key': object_name}
-            )
+            object_url = f'https://{self.__s3_bucket__}.s3.amazonaws.com/{object_name}'
             logger.debug(f"object_id={object_id}, object_url={object_url}")
             return object_id, object_url
         except ClientError as e:
