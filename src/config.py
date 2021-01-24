@@ -7,7 +7,7 @@ class Config:
         self.bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
         self.min_message_length = os.getenv('TELEGRAM_MIN_MESSAGE_LENGTH', 1)
         self.max_message_length = os.getenv('TELEGRAM_MAX_MESSAGE_LENGTH', 255)
-        self.inline_debounce_millis = os.getenv('TELEGRAM_INLINE_DEBOUNCE_MILLIS', 300)
+        self.inline_debounce_millis = int(os.getenv('TELEGRAM_INLINE_DEBOUNCE_MILLIS', "1000"))
         self.output_format = Config.OutputFormat.MP3.value
         output_format = os.getenv('AUDIO_OUTPUT_FORMAT')
         for f in Config.OutputFormat:
