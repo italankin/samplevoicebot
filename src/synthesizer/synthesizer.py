@@ -8,5 +8,5 @@ class Synthesizer:
         """
         pass
 
-    def voices(self) -> list[str]:
+    def voices(self, text: str) -> list[str]:
         pass

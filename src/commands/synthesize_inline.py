@@ -67,7 +67,7 @@ def __synthesize_callback__(context: CallbackContext):
 
 def __synthesize__(update: Update, text: str):
     tasks = []
-    for voice in synthesizer.voices():
+    for voice in synthesizer.voices(text):
         tasks.append(executor.submit(__synthesize_voice__, voice=voice, text=text))
     inline_results = []
     for task in concurrent.futures.as_completed(tasks):
