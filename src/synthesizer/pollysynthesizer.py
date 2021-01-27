@@ -20,7 +20,7 @@ class PollySynthesizer(Synthesizer):
         self.__voices__ = dict()
 
     def synthesize(self, voice_id: str, text: str) -> object:
-        logger.debug(f"Synthesize request: voice_id={voice_id}, text='{text}'")
+        logger.info(f"Synthesize request: voice_id={voice_id}, text='{text}'")
         response = self.__polly__.synthesize_speech(
             VoiceId=voice_id,
             OutputFormat=bot_env.config.output_format['name'],

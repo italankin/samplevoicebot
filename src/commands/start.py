@@ -1,8 +1,8 @@
 from telegram import Update, ParseMode
-from telegram.ext import CommandHandler, CallbackContext
+from telegram.ext import CommandHandler, CallbackContext, Dispatcher
 
 
-def register(dispatcher):
+def register(dispatcher: Dispatcher):
     dispatcher.add_handler(CommandHandler('start', __command__))
 
 

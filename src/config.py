@@ -7,6 +7,7 @@ class Config:
     inline_debounce_millis: int
     min_message_length: int
     max_message_length: int
+    developer_char_id: int
     output_format: dict
 
     def __init__(self):
@@ -14,6 +15,7 @@ class Config:
         self.inline_debounce_millis = int(os.getenv('TELEGRAM_INLINE_DEBOUNCE_MILLIS', "1000"))
         self.min_message_length = int(os.getenv('TELEGRAM_MIN_MESSAGE_LENGTH', "1"))
         self.max_message_length = int(os.getenv('TELEGRAM_MAX_MESSAGE_LENGTH', "255"))
+        self.developer_char_id = int(os.getenv('TELEGRAM_DEVELOPER_CHAT_ID', "-1"))
         self.output_format = Config.OutputFormat.MP3.value
         output_format = os.getenv('TELEGRAM_AUDIO_OUTPUT_FORMAT')
         for f in Config.OutputFormat:

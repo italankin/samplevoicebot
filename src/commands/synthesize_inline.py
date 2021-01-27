@@ -93,5 +93,5 @@ def __synthesize_voice__(voice: str, text: str) -> Optional[Tuple[str, str, str]
             return None
         return object_id, object_url, voice
     except Exception as e:
-        logger.debug(f"Failed to synthesize {voice}: {e}")
+        logger.error(f"Failed to synthesize voice={voice}, text={text}: {e}", exc_info=e)
         return None

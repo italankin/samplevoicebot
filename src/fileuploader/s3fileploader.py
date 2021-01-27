@@ -32,5 +32,5 @@ class S3FileUploader(FileUploader):
             logger.debug(f"object_id={object_id}, object_url={object_url}")
             return object_id, object_url
         except ClientError as e:
-            logging.error(e)
+            logging.error(f"Error while uploading object_id={object_id}: {e}", exc_info=e)
             return None
