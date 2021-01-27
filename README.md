@@ -22,6 +22,17 @@ Parameter|Description
 `AWS_S3_BUCKET`|AWS bucket name where files will be stored
 `AWS_REGION_NAME`|AWS region name where your bucket is located e.g. `us-east-1`
 
+Other parameters:
+
+Parameter|Values|Default|Description
+---|---|---|---
+`TELEGRAM_AUDIO_OUTPUT_FORMAT`|`mp3`, `ogg_vorbis`|`mp3`|Output format for voice files
+`TELEGRAM_DEVELOPER_CHAT_ID`|_int_|`-1`|Chat id in which bot will post unhandled error messages. `-1` means nobody will be notified.
+`TELEGRAM_MIN_MESSAGE_LENGTH`|_int_|`1`|Minimal message length to generate voice
+`TELEGRAM_MAX_MESSAGE_LENGTH`|_int_|`255`|Maximum message length to generate voice
+`TELEGRAM_INLINE_DEBOUNCE_MILLIS`|_int_|`1000`|Debounce interval for incoming inline requests to avoid unnecessary voice generations
+`DEBUG`|`1`, `0`|`0`|Enable/disable verbose logging
+
 ### AWS configuration
 
 An unrestricted, unauthorized public access to the objects in the bucket is required. This can be achieved with bucket policy:
@@ -49,6 +60,8 @@ An unrestricted, unauthorized public access to the objects in the bucket is requ
 _\* `samplebucket` must be substituted with your backet name._
 </details>
 
+See [docs](https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteAccessPermissionsReqd.html) for more info.
+
 ## Docker
 
 ### Docker Hub
@@ -71,6 +84,7 @@ AWS_SECRET_ACCESS_KEY=<your-aws-secret-access-key>
 AWS_REGION_NAME=<aws-region-name>
 AWS_S3_BUCKET=<your-s3-bucket-name>
 TELEGRAM_BOT_TOKEN=<your-telegram-bot-token>
+<any-additional-parameters>
 ```
 
 Run:
