@@ -47,10 +47,7 @@ An unrestricted, unauthorized public access to the objects in the bucket is requ
             "Sid": "PublicRead",
             "Effect": "Allow",
             "Principal": "*",
-            "Action": [
-                "s3:GetObject",
-                "s3:GetObjectVersion"
-            ],
+            "Action": "s3:GetObject",
             "Resource": "arn:aws:s3:::samplebucket/*"
         }
     ]
