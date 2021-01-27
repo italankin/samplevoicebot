@@ -26,7 +26,6 @@ Other parameters:
 
 Parameter|Values|Default|Description
 ---|---|---|---
-`TELEGRAM_AUDIO_OUTPUT_FORMAT`|`mp3`, `ogg_vorbis`|`mp3`|Output format for voice files
 `TELEGRAM_DEVELOPER_CHAT_ID`|_int_|`-1`|Chat id in which bot will post unhandled error messages. `-1` means nobody will be notified.
 `TELEGRAM_MIN_MESSAGE_LENGTH`|_int_|`1`|Minimal message length to generate voice
 `TELEGRAM_MAX_MESSAGE_LENGTH`|_int_|`255`|Maximum message length to generate voice
