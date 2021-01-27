@@ -11,6 +11,7 @@ from fileuploader.fileuploader import FileUploader
 from fileuploader.s3fileploader import S3FileUploader
 from synthesizer.pollysynthesizer import PollySynthesizer
 from synthesizer.synthesizer import Synthesizer
+from util.converter import convert_mp3_ogg_opus
 from util.sanitizer import Sanitizer
 from util.validator import Validator
 
@@ -71,9 +72,10 @@ def __synthesize__(update: Update, text: str):
         tasks.append(executor.submit(__synthesize_voice__, voice=voice, text=text))
     inline_results = []
     for task in concurrent.futures.as_completed(tasks):
-        (object_id, object_url, voice) = task.result()
-        if object_url is None:
+        result = task.result()
+        if result is None:
             continue
+        (object_id, object_url, voice) = result
         result_voice = InlineQueryResultVoice(
             id=object_id,
             voice_url=object_url,
@@ -85,13 +87,13 @@ def __synthesize__(update: Update, text: str):
 
 def __synthesize_voice__(voice: str, text: str) -> Optional[Tuple[str, str, str]]:
     try:
-        stream = synthesizer.synthesize(voice_id=voice, text=text)
-        if stream is None:
-            return None
-        (object_id, object_url) = file_uploader.upload(stream)
-        if object_id is None or object_url is None:
-            return None
-        return object_id, object_url, voice
+        voice_bytes = synthesizer.synthesize(voice_id=voice, text=text)
+        with convert_mp3_ogg_opus(voice_bytes) as f:
+            result = file_uploader.upload(f)
+            if result is None:
+                return None
+            (object_id, object_url) = result
+            return object_id, object_url, voice
     except Exception as e:
-        logger.error(f"Failed to synthesize voice={voice}, text={text}: {e}", exc_info=e)
+        logger.error(f"Failed to synthesize voice={voice}, text='{text}': {e}", exc_info=e)
         return None
