@@ -34,16 +34,14 @@ class PollySynthesizer(Synthesizer):
         language = PollySynthesizer.__guess_language__(text)
         if language in self.__voices__:
             return self.__voices__[language]
-        try:
-            self.__lock__.acquire()
-            voices = self.__fetch_voices__(language)
-            self.__voices__[language] = voices
-            return voices
-        except Exception as e:
-            logger.error(f"Failed to fetch voices for language={language}: {e}")
-            return []
-        finally:
-            self.__lock__.release()
+        with self.__lock__:
+            try:
+                voices = self.__fetch_voices__(language)
+                self.__voices__[language] = voices
+                return voices
+            except Exception as e:
+                logger.error(f"Failed to fetch voices for language={language}: {e}")
+                return []
 
     def __fetch_voices__(self, language: str) -> list[str]:
         response = self.__polly__.describe_voices(LanguageCode=language, IncludeAdditionalLanguageCodes=False)
