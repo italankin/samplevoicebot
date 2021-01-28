@@ -1,5 +1,7 @@
 import re
 
+pattern = re.compile('\\s{2,}')
+
 
 class Sanitizer:
     def __init__(self, max_length):
@@ -7,6 +9,5 @@ class Sanitizer:
 
     def sanitize(self, text: str) -> str:
         text = text.strip()
-        p = re.compile('(\\s){2,}')
-        text = p.sub('\1', text)
+        text = pattern.sub(' ', text)
         return text[:self.max_length]

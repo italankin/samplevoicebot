@@ -69,23 +69,19 @@ def __synthesize_callback__(context: CallbackContext):
 def __synthesize__(update: Update, text: str):
     tasks = []
     for voice in synthesizer.voices(text):
-        tasks.append(executor.submit(__synthesize_voice__, voice=voice, text=text))
+        tasks.append(executor.submit(__synthesize_request__, voice=voice, text=text))
     inline_results = []
     for task in concurrent.futures.as_completed(tasks):
         result = task.result()
         if result is None:
             continue
         (object_id, object_url, voice) = result
-        result_voice = InlineQueryResultVoice(
-            id=object_id,
-            voice_url=object_url,
-            title=f"{voice}:\n{text}"
-        )
+        result_voice = InlineQueryResultVoice(id=object_id, voice_url=object_url, title=f"{voice}:\n{text}")
         inline_results.append(result_voice)
     update.inline_query.answer(results=inline_results, is_personal=True, cache_time=120)
 
 
-def __synthesize_voice__(voice: str, text: str) -> Optional[Tuple[str, str, str]]:
+def __synthesize_request__(voice: str, text: str) -> Optional[Tuple[str, str, str]]:
     try:
         voice_bytes = synthesizer.synthesize(voice_id=voice, text=text)
         with convert_mp3_ogg_opus(voice_bytes) as f:
