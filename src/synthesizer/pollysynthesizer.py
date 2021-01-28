@@ -59,7 +59,11 @@ class PollySynthesizer(Synthesizer):
     @staticmethod
     def __guess_language__(text: str) -> Language:
         code = langdetect.detect(text)
-        logger.debug(f"detected language={code} for text='{text}")
+        if code == 'mk':
+            # special case for ru language (mk is not supported)
+            logger.debug(f"detected language code={code}, substituted with 'ru' for text='{text}")
+            return Language.RU
+        logger.debug(f"detected language code={code} for text='{text}")
         language = Language.from_name(code)
         return language or Language.EN
 
