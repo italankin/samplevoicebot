@@ -22,6 +22,7 @@ class Language(Enum):
     FR = {'name': 'fr', 'code': 'fr-FR'}
     DE = {'name': 'de', 'code': 'de-DE'}
     IT = {'name': 'it', 'code': 'it-IT'}
+    NL = {'name': 'nl', 'code': 'nl-NL'}
 
     @staticmethod
     def from_name(name: str) -> Optional['Language']:
