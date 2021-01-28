@@ -1,8 +1,8 @@
 import logging
-import re
 import threading
 from typing import Optional, Tuple
 
+import langdetect
 from boto3 import session
 
 from synthesizer.synthesizer import Synthesizer, Language
@@ -17,6 +17,7 @@ class PollySynthesizer(Synthesizer):
         self.__polly__ = aws_session.client('polly')
         self.__lock__ = threading.Lock()
         self.__voices__ = dict()
+        langdetect.DetectorFactory.seed = 0
 
     def synthesize(self, voice_id: str, text: str) -> bytes:
         logger.info(f"Synthesize request: voice_id={voice_id}, text='{text}'")
@@ -57,10 +58,10 @@ class PollySynthesizer(Synthesizer):
 
     @staticmethod
     def __guess_language__(text: str) -> Language:
-        if re.compile("[А-я]").search(text):
-            return Language.RU
-        else:
-            return Language.EN
+        code = langdetect.detect(text)
+        logger.debug(f"detected language={code} for text='{text}")
+        language = Language.from_name(code)
+        return language or Language.EN
 
     @staticmethod
     def __choose_voices__(voices: list[Tuple[str, str]], genders: list[str]) -> list[str]:
