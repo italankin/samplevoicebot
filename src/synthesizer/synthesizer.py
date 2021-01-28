@@ -1,3 +1,7 @@
+from enum import Enum
+from typing import Optional
+
+
 class Synthesizer:
     def synthesize(self, voice_id: str, text: str) -> bytes:
         """
@@ -8,5 +12,20 @@ class Synthesizer:
         """
         pass
 
-    def voices(self, text: str) -> list[str]:
+    def voices(self, text: str, language: Optional['Language'] = None) -> list[str]:
         pass
+
+
+class Language(Enum):
+    EN = {'name': 'en', 'code': 'en-US'}
+    RU = {'name': 'ru', 'code': 'ru-RU'}
+    FR = {'name': 'fr', 'code': 'fr-FR'}
+    DE = {'name': 'de', 'code': 'de-DE'}
+    IT = {'name': 'it', 'code': 'it-IT'}
+
+    @staticmethod
+    def from_name(name: str) -> Optional['Language']:
+        for language in Language:
+            if name == language.value['name']:
+                return language
+        return None

@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 
 from boto3 import session
 
-from synthesizer.synthesizer import Synthesizer
+from synthesizer.synthesizer import Synthesizer, Language
 
 logger = logging.getLogger(__name__)
 
@@ -30,17 +30,17 @@ class PollySynthesizer(Synthesizer):
         else:
             raise ValueError(f"Cannot read response for request: voice_id={voice_id}, text='{text[:10]}'")
 
-    def voices(self, text: str) -> list[str]:
-        language = PollySynthesizer.__guess_language__(text)
-        if language in self.__voices__:
-            return self.__voices__[language]
+    def voices(self, text: str, language: Optional[Language] = None) -> list[str]:
+        language_code = (language or PollySynthesizer.__guess_language__(text)).value['code']
+        if language_code in self.__voices__:
+            return self.__voices__[language_code]
         with self.__lock__:
             try:
-                voices = self.__fetch_voices__(language)
-                self.__voices__[language] = voices
+                voices = self.__fetch_voices__(language_code)
+                self.__voices__[language_code] = voices
                 return voices
             except Exception as e:
-                logger.error(f"Failed to fetch voices for language={language}: {e}")
+                logger.error(f"Failed to fetch voices for language={language_code}: {e}")
                 return []
 
     def __fetch_voices__(self, language: str) -> list[str]:
@@ -56,11 +56,11 @@ class PollySynthesizer(Synthesizer):
         return voices
 
     @staticmethod
-    def __guess_language__(text: str) -> str:
-        p = re.compile("[А-я]")
-        if p.search(text):
-            return 'ru-RU'
-        return 'en-US'
+    def __guess_language__(text: str) -> Language:
+        if re.compile("[А-я]").search(text):
+            return Language.RU
+        else:
+            return Language.EN
 
     @staticmethod
     def __choose_voices__(voices: list[Tuple[str, str]], genders: list[str]) -> list[str]:
