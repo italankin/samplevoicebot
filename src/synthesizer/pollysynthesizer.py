@@ -63,9 +63,9 @@ class PollySynthesizer(Synthesizer):
         logger.debug(f"Detected language name={lang_name} for text='{text}'")
         if lang_name in bot_env.config.language_mappings:
             lang_name = bot_env.config.language_mappings[lang_name]
-        language = Language.from_name(lang_name)
+        language = Language.from_name(lang_name) or Language.EN
         logger.info(f"Using language code={language.value['code']} for text='{text}'")
-        return language or Language.EN
+        return language
 
     @staticmethod
     def __choose_voices__(voices: list[Tuple[str, str]], genders: list[str]) -> list[str]:
