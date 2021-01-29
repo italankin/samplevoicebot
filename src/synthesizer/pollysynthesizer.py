@@ -59,7 +59,11 @@ class PollySynthesizer(Synthesizer):
 
     @staticmethod
     def __guess_language__(text: str) -> Language:
-        lang_name = langdetect.detect(text)
+        try:
+            lang_name = langdetect.detect(text)
+        except Exception as e:
+            logger.error(f"Cannot detect language: {e}", exc_info=e)
+            lang_name = None
         logger.debug(f"Detected language name={lang_name} for text='{text}'")
         if lang_name in bot_env.config.language_mappings:
             lang_name = bot_env.config.language_mappings[lang_name]
