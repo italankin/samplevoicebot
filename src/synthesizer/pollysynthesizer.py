@@ -5,6 +5,7 @@ from typing import Optional, Tuple
 import langdetect
 from boto3 import session
 
+from bot_env import bot_env
 from synthesizer.synthesizer import Synthesizer, Language
 
 logger = logging.getLogger(__name__)
@@ -58,13 +59,12 @@ class PollySynthesizer(Synthesizer):
 
     @staticmethod
     def __guess_language__(text: str) -> Language:
-        code = langdetect.detect(text)
-        if code in ['mk', 'bg']:
-            # special case for ru language
-            logger.debug(f"Detected language code={code}, substituted with 'ru' for text='{text}'")
-            return Language.RU
-        logger.debug(f"Detected language code={code} for text='{text}'")
-        language = Language.from_name(code)
+        lang_name = langdetect.detect(text)
+        logger.debug(f"Detected language name={lang_name} for text='{text}'")
+        if lang_name in bot_env.config.language_mappings:
+            lang_name = bot_env.config.language_mappings[lang_name]
+        language = Language.from_name(lang_name)
+        logger.info(f"Using language code={language.value['code']} for text='{text}'")
         return language or Language.EN
 
     @staticmethod

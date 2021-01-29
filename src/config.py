@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 
 class Config:
@@ -7,6 +8,7 @@ class Config:
     min_message_length: int
     max_message_length: int
     developer_char_id: int
+    language_mappings: dict[str, str]
 
     def __init__(self):
         self.bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
@@ -14,7 +16,22 @@ class Config:
         self.min_message_length = int(os.getenv('TELEGRAM_MIN_MESSAGE_LENGTH', "1"))
         self.max_message_length = int(os.getenv('TELEGRAM_MAX_MESSAGE_LENGTH', "255"))
         self.developer_char_id = int(os.getenv('TELEGRAM_DEVELOPER_CHAT_ID', "-1"))
+        self.language_mappings = Config.__parse_lang_mappings__(os.getenv('LANGUAGE_DETECT_MAPPINGS'))
         self.aws = Config.Aws()
+
+    @staticmethod
+    def __parse_lang_mappings__(mappings: Optional[str]) -> dict[str, str]:
+        if mappings:
+            result = {}
+            for pair in mappings.split(','):
+                l_from, l_to = pair.split('=', 2)
+                if l_from and l_to:
+                    result[l_from] = l_to
+                else:
+                    raise ValueError(f"Incorrect language mappings='{mappings}'")
+            return result
+        else:
+            return {}
 
     class Aws:
         access_key_id: str
