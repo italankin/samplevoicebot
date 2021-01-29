@@ -30,6 +30,7 @@ Parameter|Values|Default|Description
 `TELEGRAM_MIN_MESSAGE_LENGTH`|_int_|`1`|Minimal message length to generate voice
 `TELEGRAM_MAX_MESSAGE_LENGTH`|_int_|`255`|Maximum message length to generate voice
 `TELEGRAM_INLINE_DEBOUNCE_MILLIS`|_int_|`1000`|Debounce interval for incoming inline requests to avoid unnecessary voice generations
+`LANGUAGE_DETECT_MAPPINGS`|_str_| |Language mappings in format `from=to`. Multiple substitutions can be joined with commas e.g. `mk=ru,bg=ru,uk=ru`
 `DEBUG`|`1`, `0`|`0`|Enable/disable verbose logging
 
 ### AWS configuration
