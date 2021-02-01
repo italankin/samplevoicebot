@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 class PollySynthesizer(Synthesizer):
-    voices: dict[str, Optional[list[str]]]
+    voices: dict[str, list[str]]
 
     def __init__(self, aws_session: session.Session):
         self.polly = aws_session.client('polly')
-        self.lock = threading.Lock()
+        self.fetch_voices_lock = threading.Lock()
         self.voices = dict()
         langdetect.DetectorFactory.seed = 0
 
@@ -36,7 +36,7 @@ class PollySynthesizer(Synthesizer):
         language_code = (language or PollySynthesizer._guess_language(text)).value['code']
         if language_code in self.voices:
             return self.voices[language_code]
-        with self.lock:
+        with self.fetch_voices_lock:
             # check if we just fetched voices for a language
             if language_code in self.voices:
                 return self.voices[language_code]
@@ -79,8 +79,8 @@ class PollySynthesizer(Synthesizer):
         # to limit synthesize requests, select only one voice for each gender
         result = []
         for gender in genders:
-            sorted_voices = [voice_id for (voice_id, voice_gender) in voices if voice_gender == gender]
-            sorted_voices.sort()
-            if len(sorted_voices) > 0:
-                result.append(sorted_voices[0])
+            g_voices = [voice_id for (voice_id, voice_gender) in voices if voice_gender == gender]
+            g_voices.sort()
+            if len(g_voices) > 0:
+                result.append(g_voices[0])
         return result
