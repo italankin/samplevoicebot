@@ -94,7 +94,7 @@ def _synthesize(update: Update, text: str, language: Optional[Language]):
         (object_id, object_url, voice) = result
         result_voice = InlineQueryResultVoice(id=object_id, voice_url=object_url, title=f"{voice}:\n{text}")
         inline_results.append(result_voice)
-    update.inline_query.answer(results=inline_results, is_personal=True, cache_time=120)
+    update.inline_query.answer(results=inline_results, is_personal=True, cache_time=30)
 
 
 def _synthesize_request(voice: str, text: str) -> Optional[Tuple[str, str, str]]:
