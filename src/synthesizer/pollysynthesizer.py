@@ -37,6 +37,9 @@ class PollySynthesizer(Synthesizer):
         if language_code in self.voices:
             return self.voices[language_code]
         with self.lock:
+            # check if we just fetched voices for a language
+            if language_code in self.voices:
+                return self.voices[language_code]
             try:
                 voices = self._fetch_voices(language_code)
                 self.voices[language_code] = voices
