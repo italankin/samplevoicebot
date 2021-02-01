@@ -13,6 +13,14 @@ class Synthesizer:
         pass
 
     def voices(self, text: str, language: Optional['Language'] = None) -> list[str]:
+        """
+        Get a list of supported voices for a given 'text'.
+        Optional parameter 'language' forces synthesizer to use it
+        for voice generation.
+        :param text:
+        :param language:
+        :return:
+        """
         pass
 
 

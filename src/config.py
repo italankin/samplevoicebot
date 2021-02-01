@@ -16,11 +16,11 @@ class Config:
         self.min_message_length = int(os.getenv('TELEGRAM_MIN_MESSAGE_LENGTH', "1"))
         self.max_message_length = int(os.getenv('TELEGRAM_MAX_MESSAGE_LENGTH', "255"))
         self.developer_char_id = int(os.getenv('TELEGRAM_DEVELOPER_CHAT_ID', "-1"))
-        self.language_mappings = Config.__parse_lang_mappings__(os.getenv('LANGUAGE_DETECT_MAPPINGS'))
+        self.language_mappings = Config._parse_lang_mappings(os.getenv('LANGUAGE_DETECT_MAPPINGS'))
         self.aws = Config.Aws()
 
     @staticmethod
-    def __parse_lang_mappings__(mappings: Optional[str]) -> dict[str, str]:
+    def _parse_lang_mappings(mappings: Optional[str]) -> dict[str, str]:
         if mappings:
             result = {}
             for pair in mappings.split(','):

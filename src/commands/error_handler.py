@@ -11,10 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 def register(dispatcher: Dispatcher):
-    dispatcher.add_error_handler(__command__)
+    dispatcher.add_error_handler(_command)
 
 
-def __command__(update: Update, context: CallbackContext):
+def _command(update: Update, context: CallbackContext):
     logger.error(f"Cannot handle update: {context.error}", exc_info=context.error)
     if bot_env.config.developer_char_id != -1:
         tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)

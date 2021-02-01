@@ -7,10 +7,10 @@ supported_languages = ", ".join([f"`{lang.value['name']}`" for lang in Language]
 
 
 def register(dispatcher: Dispatcher):
-    dispatcher.add_handler(CommandHandler('start', __command__))
+    dispatcher.add_handler(CommandHandler('start', _command))
 
 
-def __command__(update: Update, context: CallbackContext):
+def _command(update: Update, context: CallbackContext):
     text = (
         f"Hello, I am {context.bot.name}\\!\n"
         f"I can convert text into speech\\.\n"

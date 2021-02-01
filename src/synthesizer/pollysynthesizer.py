@@ -12,17 +12,17 @@ logger = logging.getLogger(__name__)
 
 
 class PollySynthesizer(Synthesizer):
-    __voices__: dict[str, Optional[list[str]]]
+    voices: dict[str, Optional[list[str]]]
 
     def __init__(self, aws_session: session.Session):
-        self.__polly__ = aws_session.client('polly')
-        self.__lock__ = threading.Lock()
-        self.__voices__ = dict()
+        self.polly = aws_session.client('polly')
+        self.lock = threading.Lock()
+        self.voices = dict()
         langdetect.DetectorFactory.seed = 0
 
     def synthesize(self, voice_id: str, text: str) -> bytes:
         logger.info(f"Synthesize request: voice_id={voice_id}, text='{text}'")
-        response = self.__polly__.synthesize_speech(
+        response = self.polly.synthesize_speech(
             VoiceId=voice_id,
             OutputFormat='mp3',
             Text=text
@@ -33,32 +33,32 @@ class PollySynthesizer(Synthesizer):
             raise ValueError(f"Cannot read response for request: voice_id={voice_id}, text='{text[:10]}'")
 
     def voices(self, text: str, language: Optional[Language] = None) -> list[str]:
-        language_code = (language or PollySynthesizer.__guess_language__(text)).value['code']
-        if language_code in self.__voices__:
-            return self.__voices__[language_code]
-        with self.__lock__:
+        language_code = (language or PollySynthesizer._guess_language(text)).value['code']
+        if language_code in self.voices:
+            return self.voices[language_code]
+        with self.lock:
             try:
-                voices = self.__fetch_voices__(language_code)
-                self.__voices__[language_code] = voices
+                voices = self._fetch_voices(language_code)
+                self.voices[language_code] = voices
                 return voices
             except Exception as e:
                 logger.error(f"Failed to fetch voices for language={language_code}: {e}")
                 return []
 
-    def __fetch_voices__(self, language: str) -> list[str]:
-        response = self.__polly__.describe_voices(LanguageCode=language, IncludeAdditionalLanguageCodes=False)
+    def _fetch_voices(self, language: str) -> list[str]:
+        response = self.polly.describe_voices(LanguageCode=language, IncludeAdditionalLanguageCodes=False)
         voices_list = response['Voices']
         if not voices_list:
             logger.warning(f"Received empty voices for language={language}")
-            self.__voices__[language] = []
+            self.voices[language] = []
             return []
         available_voices = [(voice['Id'], voice['Gender']) for voice in voices_list]
-        voices = PollySynthesizer.__choose_voices__(available_voices, ['Female', 'Male'])
+        voices = PollySynthesizer._choose_voices(available_voices, ['Female', 'Male'])
         logger.info(f"Available voices for language={language}: {available_voices}, chosen voices={voices}")
         return voices
 
     @staticmethod
-    def __guess_language__(text: str) -> Language:
+    def _guess_language(text: str) -> Language:
         try:
             lang_name = langdetect.detect(text)
         except Exception as e:
@@ -72,7 +72,7 @@ class PollySynthesizer(Synthesizer):
         return language
 
     @staticmethod
-    def __choose_voices__(voices: list[Tuple[str, str]], genders: list[str]) -> list[str]:
+    def _choose_voices(voices: list[Tuple[str, str]], genders: list[str]) -> list[str]:
         # to limit synthesize requests, select only one voice for each gender
         result = []
         for gender in genders:

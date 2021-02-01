@@ -32,28 +32,28 @@ def register(dispatcher: Dispatcher):
     file_uploader = S3FileUploader(bot_env.aws_session, bot_env.config.aws.s3_bucket)
     validator = Validator(bot_env.config.min_message_length, bot_env.config.max_message_length)
     sanitizer = Sanitizer(bot_env.config.max_message_length)
-    dispatcher.add_handler(InlineQueryHandler(__command__))
+    dispatcher.add_handler(InlineQueryHandler(_command))
 
 
-def __command__(update: Update, context: CallbackContext):
+def _command(update: Update, context: CallbackContext):
     query = update.inline_query.query
     job_name = str(update.effective_user.id)
-    had_active_jobs = __remove_active_jobs__(context, job_name)
-    language, text = __parse_query__(query)
+    had_active_jobs = _remove_active_jobs(context, job_name)
+    language, text = _parse_query(query)
     if not validator.validate(text):
         logger.debug(f"Invalid query='{query}', language='{language}' sanitized='{text}'")
         if had_active_jobs:
             update.inline_query.answer(results=[], is_personal=True)
         return
     context.job_queue.run_once(
-        __synthesize_callback__,
+        _synthesize_callback,
         when=datetime.timedelta(milliseconds=bot_env.config.inline_debounce_millis),
         name=job_name,
         context={'update': update, 'text': text, 'language': language}
     )
 
 
-def __remove_active_jobs__(context: CallbackContext, job_name: str) -> bool:
+def _remove_active_jobs(context: CallbackContext, job_name: str) -> bool:
     active_jobs = context.job_queue.get_jobs_by_name(job_name)
     logger.debug(f"Active jobs for job_name={job_name}: {active_jobs}")
     if not active_jobs:
@@ -64,7 +64,7 @@ def __remove_active_jobs__(context: CallbackContext, job_name: str) -> bool:
     return True
 
 
-def __parse_query__(query: str) -> Tuple[Optional[Language], str]:
+def _parse_query(query: str) -> Tuple[Optional[Language], str]:
     text = sanitizer.sanitize(query)
     if text.startswith('!'):
         match = lang_text_pattern.fullmatch(text)
@@ -77,15 +77,15 @@ def __parse_query__(query: str) -> Tuple[Optional[Language], str]:
     return None, text
 
 
-def __synthesize_callback__(context: CallbackContext):
+def _synthesize_callback(context: CallbackContext):
     args = context.job.context
-    __synthesize__(args['update'], args['text'], args['language'])
+    _synthesize(args['update'], args['text'], args['language'])
 
 
-def __synthesize__(update: Update, text: str, language: Optional[Language]):
+def _synthesize(update: Update, text: str, language: Optional[Language]):
     tasks = []
     for voice in synthesizer.voices(text, language):
-        tasks.append(executor.submit(__synthesize_request__, voice=voice, text=text))
+        tasks.append(executor.submit(_synthesize_request, voice=voice, text=text))
     inline_results = []
     for task in concurrent.futures.as_completed(tasks):
         result = task.result()
@@ -97,7 +97,7 @@ def __synthesize__(update: Update, text: str, language: Optional[Language]):
     update.inline_query.answer(results=inline_results, is_personal=True, cache_time=120)
 
 
-def __synthesize_request__(voice: str, text: str) -> Optional[Tuple[str, str, str]]:
+def _synthesize_request(voice: str, text: str) -> Optional[Tuple[str, str, str]]:
     try:
         voice_bytes = synthesizer.synthesize(voice_id=voice, text=text)
         with convert_mp3_ogg_opus(voice_bytes) as f:

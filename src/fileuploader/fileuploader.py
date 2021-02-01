@@ -1,8 +1,8 @@
-from typing import Tuple, Optional
+from typing import Tuple, Optional, IO
 
 
 class FileUploader:
-    def upload(self, stream) -> Optional[Tuple[str, str]]:
+    def upload(self, stream: IO) -> Optional[Tuple[str, str]]:
         """
         Upload stream data to a storage
         :param stream: stream of data
