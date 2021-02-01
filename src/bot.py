@@ -13,7 +13,7 @@ logging.basicConfig(
     level=logging.DEBUG if os.getenv('DEBUG') == "1" else logging.INFO
 )
 
-updater = Updater(token=bot_env.config.bot_token)
+updater = Updater(token=bot_env.config.bot_token, workers=bot_env.config.max_workers)
 dispatcher = updater.dispatcher
 
 commands.error_handler.register(dispatcher)

@@ -22,7 +22,7 @@ synthesizer: Synthesizer
 file_uploader: FileUploader
 validator: Validator
 sanitizer: Sanitizer
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=bot_env.config.max_workers)
 lang_text_pattern = re.compile("!(?P<language>[a-z]{2,3})\\s(?P<text>.*)")
 
 
