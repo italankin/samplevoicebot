@@ -1,6 +1,7 @@
 from boto3 import session
 
 from config import Config
+from util.statistics import Statistics
 
 
 class BotEnv:
@@ -11,6 +12,7 @@ class BotEnv:
             aws_secret_access_key=self.config.aws.secret_access_key,
             region_name=self.config.aws.region_name
         )
+        self.statistics = Statistics()
 
 
 bot_env = BotEnv()

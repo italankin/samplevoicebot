@@ -3,9 +3,10 @@ import os
 
 from telegram.ext import Updater
 
-import commands.start
-import commands.synthesize_inline
 import commands.error_handler
+import commands.start
+import commands.stats
+import commands.synthesize_inline
 from bot_env import bot_env
 
 logging.basicConfig(
@@ -19,6 +20,7 @@ dispatcher = updater.dispatcher
 commands.error_handler.register(dispatcher)
 commands.start.register(dispatcher)
 commands.synthesize_inline.register(dispatcher)
+commands.stats.register(dispatcher)
 
 updater.start_polling()
 updater.idle()

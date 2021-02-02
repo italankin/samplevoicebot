@@ -83,6 +83,7 @@ def _synthesize_callback(context: CallbackContext):
 
 
 def _synthesize(update: Update, text: str, language: Optional[Language]):
+    bot_env.statistics.report_request()
     tasks = []
     for voice in synthesizer.voices(text, language):
         tasks.append(executor.submit(_synthesize_request, voice=voice, text=text))
@@ -107,5 +108,6 @@ def _synthesize_request(voice: str, text: str) -> Optional[Tuple[str, str, str]]
             (object_id, object_url) = result
             return object_id, object_url, voice
     except Exception as e:
+        bot_env.statistics.report_synthesize_error()
         logger.error(f"Failed to synthesize voice={voice}, text='{text}': {e}", exc_info=e)
         return None

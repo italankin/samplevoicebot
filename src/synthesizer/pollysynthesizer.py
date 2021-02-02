@@ -28,6 +28,7 @@ class PollySynthesizer(Synthesizer):
             Text=text
         )
         if response['AudioStream'] is not None:
+            bot_env.statistics.report_synthesized(text)
             return response['AudioStream'].read()
         else:
             raise ValueError(f"Cannot read response for request: voice_id={voice_id}, text='{text[:10]}'")

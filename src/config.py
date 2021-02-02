@@ -16,6 +16,7 @@ class Config:
         self.min_message_length = int(os.getenv('TELEGRAM_MIN_MESSAGE_LENGTH', "1"))
         self.max_message_length = int(os.getenv('TELEGRAM_MAX_MESSAGE_LENGTH', "255"))
         self.developer_char_id = int(os.getenv('TELEGRAM_DEVELOPER_CHAT_ID', "-1"))
+        self.admin_id = int(os.getenv('TELEGRAM_ADMIN_ID', "-1"))
         self.language_mappings = Config._parse_lang_mappings(os.getenv('LANGUAGE_DETECT_MAPPINGS'))
         self.max_workers = int(os.getenv('MAX_WORKERS', "4"))
         self.aws = Config.Aws()
