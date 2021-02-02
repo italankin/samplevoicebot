@@ -32,7 +32,7 @@ def register(dispatcher: Dispatcher):
     file_uploader = S3FileUploader(bot_env.aws_session, bot_env.config.aws.s3_bucket)
     validator = Validator(bot_env.config.min_message_length, bot_env.config.max_message_length)
     sanitizer = Sanitizer(bot_env.config.max_message_length)
-    dispatcher.add_handler(InlineQueryHandler(_command))
+    dispatcher.add_handler(InlineQueryHandler(_command, run_async=True))
 
 
 def _command(update: Update, context: CallbackContext):
