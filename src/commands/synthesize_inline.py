@@ -6,6 +6,7 @@ import threading
 from typing import Tuple, Optional
 
 from telegram import InlineQueryResultVoice, Update
+from telegram.error import BadRequest
 from telegram.ext import Dispatcher, InlineQueryHandler, CallbackContext
 
 from bot_env import bot_env
@@ -111,9 +112,15 @@ def _synthesize(update: Update, text: str, language: Optional[Language]):
     with request_lock:
         if requests[user_id] == query_id:
             del requests[user_id]
-            update.inline_query.answer(results=inline_results, is_personal=True, cache_time=30)
         else:
             logger.warning(f"query_id={query_id} is no longer valid")
+            return
+    try:
+        update.inline_query.answer(results=inline_results, is_personal=True, cache_time=30)
+    except BadRequest as e:
+        # we probably did not fit into 10s window
+        logger.error(f"Failed to answer inline query query_id={query_id}", exc_info=e)
+        pass
 
 
 def _synthesize_request(voice: str, text: str) -> Optional[Tuple[str, str, str]]:
