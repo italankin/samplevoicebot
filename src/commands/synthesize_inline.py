@@ -100,7 +100,7 @@ def _synthesize(update: Update, text: str, language: Optional[Language]):
     inline_results = []
     for task in concurrent.futures.as_completed(tasks):
         with request_lock:
-            if requests[user_id] != query_id:
+            if user_id not in requests or requests[user_id] != query_id:
                 logger.debug(f"Stale query_id={query_id}, stop processing")
                 return
         result = task.result()
