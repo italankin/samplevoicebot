@@ -9,6 +9,7 @@ class Config:
     max_message_length: int
     developer_char_id: int
     language_mappings: dict[str, str]
+    prefetch_languages: list[str]
 
     def __init__(self):
         self.bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
@@ -19,6 +20,7 @@ class Config:
         self.admin_id = int(os.getenv('TELEGRAM_ADMIN_ID', "-1"))
         self.language_mappings = Config._parse_lang_mappings(os.getenv('LANGUAGE_DETECT_MAPPINGS'))
         self.max_workers = int(os.getenv('MAX_WORKERS', "4"))
+        self.prefetch_languages = Config._parse_prefetch_languages(os.getenv('PREFETCH_LANGUAGES'))
         self.aws = Config.Aws()
 
     @staticmethod
@@ -34,6 +36,13 @@ class Config:
             return result
         else:
             return {}
+
+    @staticmethod
+    def _parse_prefetch_languages(languages: Optional[str]) -> list[str]:
+        if languages:
+            return languages.split(',')
+        else:
+            return []
 
     class Aws:
         access_key_id: str

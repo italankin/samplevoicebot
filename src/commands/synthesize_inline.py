@@ -36,6 +36,8 @@ def register(dispatcher: Dispatcher):
     validator = Validator(bot_env.config.min_message_length, bot_env.config.max_message_length)
     sanitizer = Sanitizer(bot_env.config.max_message_length)
     dispatcher.add_handler(InlineQueryHandler(_command, run_async=True))
+    if len(bot_env.config.prefetch_languages) > 0:
+        dispatcher.job_queue.run_once(_prefetch_languages, 0)
 
 
 def _command(update: Update, context: CallbackContext):
@@ -127,3 +129,10 @@ def _synthesize_request(voice: str, text: str) -> Optional[Tuple[str, str, str]]
         bot_env.statistics.report_synthesize_error()
         logger.error(f"Failed to synthesize voice={voice}, text='{text}': {e}", exc_info=e)
         return None
+
+
+def _prefetch_languages(_):
+    for name in bot_env.config.prefetch_languages:
+        language = Language.from_name(name)
+        if language:
+            synthesizer.prefetch_voices(language)

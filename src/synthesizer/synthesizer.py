@@ -23,6 +23,12 @@ class Synthesizer:
         """
         pass
 
+    def prefetch_voices(self, language: 'Language'):
+        """
+        Prefetch voices list for a given language
+        """
+        pass
+
 
 class Language(Enum):
     EN = {'name': 'en', 'code': 'en-US'}
