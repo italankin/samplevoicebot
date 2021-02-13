@@ -2,6 +2,7 @@ import concurrent.futures
 import datetime
 import logging
 import re
+import threading
 from typing import Tuple, Optional
 
 from telegram import InlineQueryResultVoice, Update
@@ -23,6 +24,8 @@ file_uploader: FileUploader
 validator: Validator
 sanitizer: Sanitizer
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=bot_env.config.max_workers)
+request_lock = threading.Lock()
+requests = {}
 lang_text_pattern = re.compile("!(?P<language>[a-z]{2,3})\\s(?P<text>.*)")
 
 
@@ -84,18 +87,31 @@ def _synthesize_callback(context: CallbackContext):
 
 def _synthesize(update: Update, text: str, language: Optional[Language]):
     bot_env.statistics.report_request()
+    user_id = update.effective_user.id
+    query_id = update.inline_query.id
+    with request_lock:
+        requests[user_id] = query_id
     tasks = []
     for voice in synthesizer.voices(text, language):
         tasks.append(executor.submit(_synthesize_request, voice=voice, text=text))
     inline_results = []
     for task in concurrent.futures.as_completed(tasks):
+        with request_lock:
+            if requests[user_id] != query_id:
+                logger.debug(f"Stale query_id={query_id}, stop processing")
+                return
         result = task.result()
         if result is None:
             continue
         (object_id, object_url, voice) = result
         result_voice = InlineQueryResultVoice(id=object_id, voice_url=object_url, title=f"{voice}:\n{text}")
         inline_results.append(result_voice)
-    update.inline_query.answer(results=inline_results, is_personal=True, cache_time=30)
+    with request_lock:
+        if requests[user_id] == query_id:
+            del requests[user_id]
+            update.inline_query.answer(results=inline_results, is_personal=True, cache_time=30)
+        else:
+            logger.warning(f"query_id={query_id} is no longer valid")
 
 
 def _synthesize_request(voice: str, text: str) -> Optional[Tuple[str, str, str]]:
