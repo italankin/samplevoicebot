@@ -95,7 +95,8 @@ def _synthesize(update: Update, text: str, language: Optional[Language]):
     with request_lock:
         requests[user_id] = query_id
     tasks = []
-    for voice in synthesizer.voices(text, language):
+    lang, voices = synthesizer.voices(text, language)
+    for voice in voices:
         tasks.append(executor.submit(_synthesize_request, voice=voice, text=text))
     inline_results = []
     for task in concurrent.futures.as_completed(tasks):
@@ -107,7 +108,8 @@ def _synthesize(update: Update, text: str, language: Optional[Language]):
         if result is None:
             continue
         (object_id, object_url, voice) = result
-        result_voice = InlineQueryResultVoice(id=object_id, voice_url=object_url, title=f"{voice}:\n{text}")
+        result_voice = InlineQueryResultVoice(id=object_id, voice_url=object_url,
+                                              title=f"{lang.value['flag']} {voice}:\n{text}")
         inline_results.append(result_voice)
     with request_lock:
         if requests[user_id] == query_id:

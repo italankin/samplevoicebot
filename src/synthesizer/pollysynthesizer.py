@@ -33,21 +33,22 @@ class PollySynthesizer(Synthesizer):
         else:
             raise ValueError(f"Cannot read response for request: voice_id={voice_id}, text='{text[:10]}'")
 
-    def voices(self, text: str, language: Optional[Language] = None) -> list[str]:
-        language_code = (language or PollySynthesizer._guess_language(text)).value['code']
+    def voices(self, text: str, language: Optional[Language] = None) -> Tuple[Language, list[str]]:
+        lang = language or PollySynthesizer._guess_language(text)
+        language_code = lang.value['code']
         if language_code in self._voices:
-            return self._voices[language_code]
+            return lang, self._voices[language_code]
         with self._fetch_voices_lock:
             # check if we just fetched voices for a language
             if language_code in self._voices:
-                return self._voices[language_code]
+                return lang, self._voices[language_code]
             try:
                 voices = self._fetch_voices(language_code)
                 self._voices[language_code] = voices
-                return voices
+                return lang, voices
             except Exception as e:
                 logger.error(f"Failed to fetch voices for language={language_code}: {e}")
-                return []
+                return lang, []
 
     def prefetch_voices(self, language: Language):
         with self._fetch_voices_lock:

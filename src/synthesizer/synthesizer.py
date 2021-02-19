@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, Tuple
 
 
 class Synthesizer:
@@ -12,7 +12,7 @@ class Synthesizer:
         """
         pass
 
-    def voices(self, text: str, language: Optional['Language'] = None) -> list[str]:
+    def voices(self, text: str, language: Optional['Language'] = None) -> Tuple['Language', list[str]]:
         """
         Get a list of supported voices for a given 'text'.
         Optional parameter 'language' forces synthesizer to use it
@@ -31,12 +31,12 @@ class Synthesizer:
 
 
 class Language(Enum):
-    EN = {'name': 'en', 'code': 'en-US'}
-    RU = {'name': 'ru', 'code': 'ru-RU'}
-    FR = {'name': 'fr', 'code': 'fr-FR'}
-    DE = {'name': 'de', 'code': 'de-DE'}
-    IT = {'name': 'it', 'code': 'it-IT'}
-    NL = {'name': 'nl', 'code': 'nl-NL'}
+    EN = {'name': 'en', 'code': 'en-US', 'flag': '🇺🇸'}
+    RU = {'name': 'ru', 'code': 'ru-RU', 'flag': '🇷🇺'}
+    FR = {'name': 'fr', 'code': 'fr-FR', 'flag': '🇫🇷'}
+    DE = {'name': 'de', 'code': 'de-DE', 'flag': '🇩🇪'}
+    IT = {'name': 'it', 'code': 'it-IT', 'flag': '🇮🇹'}
+    NL = {'name': 'nl', 'code': 'nl-NL', 'flag': '🇳🇱'}
 
     @staticmethod
     def from_name(name: str) -> Optional['Language']:
