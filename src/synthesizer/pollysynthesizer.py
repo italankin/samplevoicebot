@@ -54,9 +54,10 @@ class PollySynthesizer(Synthesizer):
         with self._fetch_voices_lock:
             try:
                 language_code = language.value['code']
+                logger.info(f"Prefetch voices for language_code={language_code}")
                 self._voices[language_code] = self._fetch_voices(language_code)
             except Exception as e:
-                logger.error(f"Failed to fetch voices for language={language_code}: {e}")
+                logger.error(f"Failed to prefetch voices for language={language_code}: {e}")
 
     def _fetch_voices(self, language: str) -> list[str]:
         response = self._polly.describe_voices(LanguageCode=language, IncludeAdditionalLanguageCodes=False)
