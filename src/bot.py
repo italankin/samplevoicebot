@@ -14,6 +14,9 @@ logging.basicConfig(
     level=logging.DEBUG if os.getenv('DEBUG') == "1" else logging.INFO
 )
 
+aps_logger = logging.getLogger('apscheduler')
+aps_logger.setLevel(logging.WARNING)
+
 updater = Updater(token=bot_env.config.bot_token, workers=bot_env.config.max_workers)
 dispatcher = updater.dispatcher
 
