@@ -34,6 +34,7 @@ Parameter|Values|Default|Description
 `LANGUAGE_DETECT_MAPPINGS`|_str_| |Language mappings in format `from=to`. Multiple substitutions can be joined with commas e.g. `mk=ru,bg=ru,uk=ru`
 `MAX_WORKERS`|_int_|`4`|A number of workers used for concurrent jobs (e.g. speech synthesis)
 `PREFETCH_LANGUAGES`|_str_| |List languages (e.g. `ru,en`) to prefetch voices list on bot startup
+`VOICES`|_str_| |Specify voices to use, e.g. `ru-RU=Tatyana,Maxim`. Join multiple mappings with `;`. List of [supported voices](https://docs.aws.amazon.com/polly/latest/dg/voicelist.html)
 `DEBUG`|`1`, `0`|`0`|Enable/disable verbose logging
 
 ### AWS configuration
