@@ -60,11 +60,14 @@ class PollySynthesizer(Synthesizer):
                 logger.error(f"Failed to prefetch voices for language={language_code}: {e}")
 
     def _fetch_voices(self, language: str) -> list[str]:
+        print(f"config voices={bot_env.config.voices} {language in bot_env.config.voices}")
+        if bot_env.config.voices and language in bot_env.config.voices:
+            logger.info(f"Fetching voices for language={language} from config")
+            return bot_env.config.voices[language]
         response = self._polly.describe_voices(LanguageCode=language, IncludeAdditionalLanguageCodes=False)
         voices_list = response['Voices']
         if not voices_list:
             logger.warning(f"Received empty voices for language={language}")
-            self._voices[language] = []
             return []
         available_voices = [(voice['Id'], voice['Gender']) for voice in voices_list]
         voices = PollySynthesizer._choose_voices(available_voices, ['Female', 'Male'])

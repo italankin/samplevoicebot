@@ -9,6 +9,7 @@ class Config:
     max_message_length: int
     developer_char_id: int
     language_mappings: dict[str, str]
+    voices: Optional[dict[str, list[str]]]
     prefetch_languages: list[str]
 
     def __init__(self):
@@ -20,6 +21,7 @@ class Config:
         self.admin_id = int(os.getenv('TELEGRAM_ADMIN_ID', "-1"))
         self.language_mappings = Config._parse_lang_mappings(os.getenv('LANGUAGE_DETECT_MAPPINGS'))
         self.max_workers = int(os.getenv('MAX_WORKERS', "4"))
+        self.voices = Config._parse_voices(os.getenv('VOICES'))
         self.prefetch_languages = Config._parse_prefetch_languages(os.getenv('PREFETCH_LANGUAGES'))
         self.aws = Config.Aws()
 
@@ -33,6 +35,20 @@ class Config:
                     result[l_from] = l_to
                 else:
                     raise ValueError(f"Incorrect language mappings='{mappings}'")
+            return result
+        else:
+            return {}
+
+    @staticmethod
+    def _parse_voices(voices: Optional[str]) -> dict[str, list[str]]:
+        if voices:
+            result = {}
+            for pair in voices.split(';'):
+                lang, value = pair.split('=', 2)
+                if lang and value:
+                    result[lang] = value.split(',')
+                else:
+                    raise ValueError(f"Incorrect voices format='{voices}'")
             return result
         else:
             return {}
