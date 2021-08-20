@@ -1,6 +1,6 @@
 # Sample Voice Bot
 
-Telegram text-to-speech bot. It works in inline mode and offers a convenient interface to generate voice from the text.
+Telegram text-to-speech bot. It works in both inline and text mode and offers a convenient interface to generate voice from the text.
 
 Try it out: [@samplevoicebot](https://t.me/samplevoicebot).
 
@@ -29,7 +29,7 @@ Parameter|Values|Default|Description
 `TELEGRAM_DEVELOPER_CHAT_ID`|_int_|`-1`|Chat id in which bot will post unhandled error messages. `-1` means nobody will be notified.
 `TELEGRAM_ADMIN_ID`|_int_|`-1`|User ID - admin of this bot
 `TELEGRAM_MIN_MESSAGE_LENGTH`|_int_|`1`|Minimal message length to generate voice
-`TELEGRAM_MAX_MESSAGE_LENGTH`|_int_|`255`|Maximum message length to generate voice
+`TELEGRAM_MAX_MESSAGE_LENGTH`|_int_|`255`|Maximum message length to generate voice (inline messages cannot exceed 256 characters)
 `TELEGRAM_INLINE_DEBOUNCE_MILLIS`|_int_|`1000`|Debounce interval for incoming inline requests to avoid unnecessary voice generations
 `LANGUAGE_DETECT_MAPPINGS`|_str_| |Language mappings in format `from=to`. Multiple substitutions can be joined with commas e.g. `mk=ru,bg=ru,uk=ru`
 `MAX_WORKERS`|_int_|`4`|A number of workers used for concurrent jobs (e.g. speech synthesis)

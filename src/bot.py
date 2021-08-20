@@ -6,6 +6,7 @@ from telegram.ext import Updater
 import commands.error_handler
 import commands.start
 import commands.stats
+import commands.synthesize
 import commands.synthesize_inline
 from bot_env import bot_env
 
@@ -22,6 +23,7 @@ dispatcher = updater.dispatcher
 
 commands.error_handler.register(dispatcher)
 commands.start.register(dispatcher)
+commands.synthesize.register(dispatcher)
 commands.synthesize_inline.register(dispatcher)
 commands.stats.register(dispatcher)
 

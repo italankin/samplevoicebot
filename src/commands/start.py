@@ -14,7 +14,7 @@ def _command(update: Update, context: CallbackContext):
     text = (
         f"Hello, I am {context.bot.name}\\!\n"
         f"I can convert text into speech\\.\n"
-        f"To use me, start typing `{context.bot.name}` in any chat\\."
+        f"To use me, start typing `{context.bot.name}` in any chat or just send me a message\\."
     )
     context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.MARKDOWN_V2)
     text = (
