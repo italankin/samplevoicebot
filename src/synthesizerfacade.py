@@ -80,7 +80,7 @@ class SynthesizerFacade:
         tasks = []
         lang, voices = self._synthesizer.voices(text, language)
         for voice in voices:
-            tasks.append(self._executor.submit(self._synthesize_request, self, voice=voice, text=text))
+            tasks.append(self._executor.submit(self._synthesize_request, voice=voice, text=text))
         results = []
         for task in concurrent.futures.as_completed(tasks):
             if query_id:
