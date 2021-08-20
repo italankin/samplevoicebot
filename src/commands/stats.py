@@ -5,9 +5,6 @@ from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext, Dispatcher
 
 from bot_env import bot_env
-from synthesizer.synthesizer import Language
-
-supported_languages = ", ".join([f"`{lang.value['name']}`" for lang in Language])
 
 logger = logging.getLogger(__name__)
 
