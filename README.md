@@ -64,9 +64,9 @@ See [docs](https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteAccessPermissi
 
 ## Docker
 
-### Docker Hub
+### Images
 
-Images available at [italankin/samplevoicebot](https://hub.docker.com/r/italankin/samplevoicebot)
+Images are available at [italankin/samplevoicebot](https://github.com/italankin/samplevoicebot/pkgs/container/samplevoicebot)
 
 ### Build image
 
