@@ -26,7 +26,6 @@ Other parameters:
 
 Parameter|Values|Default|Description
 ---|---|---|---
-`TELEGRAM_DEVELOPER_CHAT_ID`|_int_|`-1`|Chat id in which bot will post unhandled error messages. `-1` means nobody will be notified.
 `TELEGRAM_ADMIN_ID`|_int_|`-1`|User ID - admin of this bot
 `TELEGRAM_MIN_MESSAGE_LENGTH`|_int_|`1`|Minimal message length to generate voice
 `TELEGRAM_MAX_MESSAGE_LENGTH`|_int_|`255`|Maximum message length to generate voice (inline messages cannot exceed 256 characters)

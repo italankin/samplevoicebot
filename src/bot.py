@@ -40,7 +40,7 @@ class Bot:
                 self._synthesizer_facade, self._statistics, config.prefetch_languages, config.inline_debounce_millis
             ),
             commands.stats.StatsCommand(self._statistics, config.admin_id),
-            commands.error_handler.ErrorCommand(config.developer_chat_id)
+            commands.error_handler.ErrorCommand(config.admin_id)
         ]
 
     def run(self):

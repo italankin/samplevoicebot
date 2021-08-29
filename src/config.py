@@ -7,7 +7,6 @@ class Config:
     inline_debounce_millis: int
     min_message_length: int
     max_message_length: int
-    developer_chat_id: int
     language_mappings: dict[str, str]
     voices: dict[str, list[str]]
     prefetch_languages: list[str]
@@ -17,7 +16,6 @@ class Config:
         self.inline_debounce_millis = int(os.getenv('TELEGRAM_INLINE_DEBOUNCE_MILLIS', "1000"))
         self.min_message_length = int(os.getenv('TELEGRAM_MIN_MESSAGE_LENGTH', "1"))
         self.max_message_length = int(os.getenv('TELEGRAM_MAX_MESSAGE_LENGTH', "255"))
-        self.developer_chat_id = int(os.getenv('TELEGRAM_DEVELOPER_CHAT_ID', "-1"))
         self.admin_id = int(os.getenv('TELEGRAM_ADMIN_ID', "-1"))
         self.language_mappings = Config._parse_lang_mappings(os.getenv('LANGUAGE_DETECT_MAPPINGS'))
         self.max_workers = int(os.getenv('MAX_WORKERS', "4"))
