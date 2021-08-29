@@ -66,7 +66,7 @@ See [docs](https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteAccessPermissi
 
 ### Images
 
-Images are available at [italankin/samplevoicebot](https://github.com/italankin/samplevoicebot/pkgs/container/samplevoicebot)
+Images are available at [ghcr.io](https://github.com/italankin/samplevoicebot/pkgs/container/samplevoicebot).
 
 ### Build image
 
