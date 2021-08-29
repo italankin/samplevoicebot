@@ -4,12 +4,11 @@ import re
 import threading
 from typing import Optional, Tuple, List, IO
 
-from bot_env import bot_env
-from fileuploader.s3fileploader import S3FileUploader
-from synthesizer.pollysynthesizer import PollySynthesizer
-from synthesizer.synthesizer import Language
+from fileuploader.fileuploader import FileUploader
+from synthesizer.synthesizer import Language, Synthesizer
 from util.converter import convert_mp3_ogg_opus
 from util.sanitizer import Sanitizer
+from util.statistics import Statistics
 from util.validator import Validator
 
 logger = logging.getLogger(__name__)
@@ -33,17 +32,24 @@ class SynthesizedObject:
 
 
 class SynthesizerFacade:
-    def __init__(self):
-        self._synthesizer = PollySynthesizer(bot_env.aws_session)
-        self._validator = Validator(bot_env.config.min_message_length, bot_env.config.max_message_length)
-        self._sanitizer = Sanitizer(bot_env.config.max_message_length)
-        self._file_uploader = S3FileUploader(bot_env.aws_session, bot_env.config.aws.s3_bucket)
-        self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=bot_env.config.max_workers)
+    def __init__(self,
+                 synthesizer: Synthesizer,
+                 validator: Validator,
+                 sanitizer: Sanitizer,
+                 file_uploader: FileUploader,
+                 statistics: Statistics,
+                 max_workers: int):
+        self._synthesizer = synthesizer
+        self._validator = validator
+        self._sanitizer = sanitizer
+        self._file_uploader = file_uploader
+        self._statistics = statistics
+        self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_workers)
         self._request_lock = threading.Lock()
         self._requests = {}
 
-    def prefetch_languages(self):
-        for name in bot_env.config.prefetch_languages:
+    def prefetch_languages(self, prefetch_languages: list[str]):
+        for name in prefetch_languages:
             language = Language.from_name(name)
             if language:
                 self._synthesizer.prefetch_voices(language)
@@ -73,7 +79,7 @@ class SynthesizerFacade:
             text: str,
             language: Optional[Language]
     ) -> List[SynthesizedObject]:
-        bot_env.statistics.report_request()
+        self._statistics.report_request()
         if query_id:
             with self._request_lock:
                 self._requests[user_id] = query_id
@@ -103,12 +109,12 @@ class SynthesizerFacade:
         return results
 
     def synthesize_bytes(self, voice: str, text: str) -> Optional[IO]:
-        bot_env.statistics.report_request()
+        self._statistics.report_request()
         try:
             voice_bytes = self._synthesizer.synthesize(voice_id=voice, text=text)
             return convert_mp3_ogg_opus(voice_bytes)
         except Exception as e:
-            bot_env.statistics.report_synthesize_error()
+            self._statistics.report_synthesize_error()
             logger.error(f"Failed to synthesize voice={voice}, text='{text}': {e}", exc_info=e)
             return None
 
@@ -122,9 +128,6 @@ class SynthesizerFacade:
                 (object_id, object_url) = result
                 return object_id, object_url, voice
         except Exception as e:
-            bot_env.statistics.report_synthesize_error()
+            self._statistics.report_synthesize_error()
             logger.error(f"Failed to synthesize voice={voice}, text='{text}': {e}", exc_info=e)
             return None
-
-
-synthesizer_facade = SynthesizerFacade()
