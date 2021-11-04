@@ -5,7 +5,7 @@ import threading
 from typing import Optional, Tuple, List, IO
 
 from fileuploader.fileuploader import FileUploader
-from synthesizer.synthesizer import Language, Synthesizer
+from synthesizer.synthesizer import Language, Synthesizer, Voices
 from util.converter import convert_mp3_ogg_opus
 from util.sanitizer import Sanitizer
 from util.statistics import Statistics
@@ -54,7 +54,7 @@ class SynthesizerFacade:
             if language:
                 self._synthesizer.prefetch_voices(language)
 
-    def voices(self, text, language: Optional[Language]) -> List[str]:
+    def voices(self, text, language: Optional[Language]) -> Voices:
         return self._synthesizer.voices(text, language)[1]
 
     def parse_query(self, query: str, inline: bool = False) -> Tuple[Optional[Language], str, bool]:
@@ -77,7 +77,8 @@ class SynthesizerFacade:
             user_id: str,
             query_id: Optional[str],
             text: str,
-            language: Optional[Language]
+            language: Optional[Language],
+            inline: bool = False
     ) -> List[SynthesizedObject]:
         self._statistics.report_request()
         if query_id:
@@ -85,7 +86,8 @@ class SynthesizerFacade:
                 self._requests[user_id] = query_id
         tasks = []
         lang, voices = self._synthesizer.voices(text, language)
-        for voice in voices:
+        voices_list = voices.inline_voices if inline else voices.all_voices
+        for voice in voices_list:
             tasks.append(self._executor.submit(self._synthesize_request, voice=voice, text=text))
         results = []
         for task in concurrent.futures.as_completed(tasks):

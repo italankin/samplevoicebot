@@ -29,7 +29,8 @@ class SynthesizeCommand(Command):
             return
         context.user_data[KEY_TEXT] = text
         buttons = []
-        for voice in self._synthesizer_facade.voices(text, language):
+        voices = self._synthesizer_facade.voices(text, language).all_voices
+        for voice in voices:
             buttons.append(InlineKeyboardButton(text=voice, callback_data=f"voice={voice}"))
         reply_markup = InlineKeyboardMarkup([buttons])
         update.effective_chat.send_message(text='Select voice:', reply_markup=reply_markup)

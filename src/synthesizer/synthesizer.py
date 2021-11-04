@@ -12,7 +12,7 @@ class Synthesizer:
         """
         pass
 
-    def voices(self, text: str, language: Optional['Language'] = None) -> Tuple['Language', list[str]]:
+    def voices(self, text: str, language: Optional['Language'] = None) -> Tuple['Language', 'Voices']:
         """
         Get a list of supported voices for a given 'text'.
         Optional parameter 'language' forces synthesizer to use it
@@ -44,3 +44,12 @@ class Language(Enum):
             if name == language.value['name']:
                 return language
         return None
+
+
+class Voices:
+    all_voices: list[str]
+    inline_voices: list[str]
+
+    def __init__(self, all_voices: list[str], inline_voices: list[str]):
+        self.all_voices = all_voices
+        self.inline_voices = inline_voices

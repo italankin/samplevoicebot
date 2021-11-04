@@ -65,7 +65,7 @@ class SynthesizeInlineCommand(Command):
         self._statistics.report_request()
         user_id = update.effective_user.id
         query_id = update.inline_query.id
-        synthesized = self._synthesizer_facade.synthesize(user_id, query_id, text, language)
+        synthesized = self._synthesizer_facade.synthesize(user_id, query_id, text, language, inline=True)
         inline_results = []
         for s in synthesized:
             result_voice = InlineQueryResultVoice(id=s.object_id, voice_url=s.object_url,
