@@ -22,7 +22,10 @@ class SynthesizeCommand(Command):
         dispatcher.add_handler(CallbackQueryHandler(self._inline_callback, pattern=re.compile("voice=[A-z]+")))
 
     def _command(self, update: Update, context: CallbackContext):
-        query = update.message.text
+        if update.message:
+            query = update.message.text
+        else:
+            query = update.edited_message.text
         language, text, is_valid = self._synthesizer_facade.parse_query(query)
         if not is_valid:
             logger.debug(f"Invalid query='{query}', language='{language}' sanitized='{text}'")
