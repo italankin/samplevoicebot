@@ -34,8 +34,8 @@ class SynthesizeCommand(Command):
         buttons = []
         voices = self._synthesizer_facade.voices(text, language).all_voices
         for voice in voices:
-            buttons.append(InlineKeyboardButton(text=voice, callback_data=f"voice={voice}"))
-        reply_markup = InlineKeyboardMarkup([buttons])
+            buttons.append([InlineKeyboardButton(text=voice, callback_data=f"voice={voice}")])
+        reply_markup = InlineKeyboardMarkup(buttons)
         update.effective_chat.send_message(text='Select voice:', reply_markup=reply_markup)
 
     def _inline_callback(self, update: Update, context: CallbackContext):
