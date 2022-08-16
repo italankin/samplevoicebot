@@ -3,6 +3,7 @@ import re
 
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import CHATACTION_RECORD_AUDIO
+from telegram.error import BadRequest
 from telegram.ext import CallbackContext, Dispatcher, MessageHandler, Filters, CallbackQueryHandler
 
 from commands.command import Command
@@ -49,4 +50,10 @@ class SynthesizeCommand(Command):
         voice = update.callback_query.data.split('=')[1]
         voice_bytes = self._synthesizer_facade.synthesize_bytes(voice, text)
         if voice_bytes:
-            update.effective_chat.send_voice(voice=voice_bytes)
+            try:
+                update.effective_chat.send_voice(voice=voice_bytes)
+            except BadRequest as e:
+                if e.message == 'Voice_messages_forbidden':
+                    update.effective_chat.send_message(
+                        text="Seems like I can't send you a voice message, because you have disabled them."
+                    )
