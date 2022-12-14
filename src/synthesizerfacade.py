@@ -13,7 +13,7 @@ from util.validator import Validator
 
 logger = logging.getLogger(__name__)
 
-lang_text_pattern = re.compile("!(?P<language>[a-z]{2,3})\\s(?P<text>.*)")
+lang_text_pattern = re.compile("!(?P<language>[a-z]{2,3})\\s(?P<text>.*)", re.DOTALL)
 
 
 class SynthesizedObject:
