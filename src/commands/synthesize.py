@@ -19,14 +19,17 @@ class SynthesizeCommand(Command):
         self._synthesizer_facade = synthesizer_facade
 
     def register(self, dispatcher: Dispatcher):
-        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, self._command))
+        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command | Filters.caption, self._command))
         dispatcher.add_handler(CallbackQueryHandler(self._inline_callback, pattern=re.compile("voice=[A-z]+")))
 
     def _command(self, update: Update, context: CallbackContext):
         if update.message:
-            query = update.message.text
+            if update.message.text:
+                query = update.message.text
+            elif update.message.caption:
+                query = update.message.caption
         else:
-            query = update.edited_message.text
+            return
         language, text, is_valid = self._synthesizer_facade.parse_query(query)
         if not is_valid:
             logger.debug(f"Invalid query='{query}', language='{language}' sanitized='{text}'")
